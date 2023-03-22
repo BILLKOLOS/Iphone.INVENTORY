@@ -28,4 +28,4 @@ The system tracks inventory levels for each iPhone model. When a user adds an iP
 Business Logic
 The business logic of the iPhone Inventory System is written in PHP. The system uses PHP to connect to the MySQL database and perform CRUD operations on the iPhone models. The system also uses PHP to check the inventory levels and display warning messages to users if necessary.
 
-Overall, the iPhone Inventory System provides an easy and efficient way to manage inventory levels for different iPhone models. The system is user-friendly and provides real-time inventory tracking to ensure that the inventory levels are always up-to-date.
+Conclusively, the iPhone Inventory System provides an easy and efficient way to manage inventory levels for different iPhone models. The system is user-friendly and provides real-time inventory tracking to ensure that the inventory levels are always up-to-date.
