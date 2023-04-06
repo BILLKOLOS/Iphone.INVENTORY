@@ -1,6 +1,38 @@
+/* Define colors */
+:root {
+	--primary-color: #039be5;
+	--secondary-color: #ff8f00;
+	--success-color: #4caf50;
+	--danger-color: #f44336;
+	--warning-color: #ffeb3b;
+	--info-color: #2196f3;
+	--light-color: #f8f9fa;
+	--dark-color: #333333;
+}
+
+/* Table styles */
+body {
+	margin: 0;
+	padding: 0;
+	background-color: var(--light-color);
+	font-family: Arial, sans-serif;
+}
+
+.table-container {
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 table {
 	border-collapse: collapse;
 	width: 100%;
+	max-width: 800px;
+	background-color: var(--light-color);
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	border-radius: 4px;
 }
 
 th, td {
@@ -9,18 +41,19 @@ th, td {
 }
 
 th {
-	background-color: #ccc;
-	color: #333;
+	background-color: var(--primary-color);
+	color: var(--light-color);
 }
 
 tr:nth-child(even) {
-	background-color: #f2f2f2;
+	background-color: var(--light-color);
 }
 
 tr:hover {
-	background-color: #ddd;
+	background-color: #f3f3f3;
 }
 
 td.quantity {
-	font-weight:
-
+	font-weight: bold;
+	color: var(--danger-color);
+}
