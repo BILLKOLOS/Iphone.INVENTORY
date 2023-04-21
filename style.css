@@ -1,59 +1,83 @@
 /* Define colors */
 :root {
-	--primary-color: #039be5;
-	--secondary-color: #ff8f00;
-	--success-color: #4caf50;
-	--danger-color: #f44336;
-	--warning-color: #ffeb3b;
-	--info-color: #2196f3;
-	--light-color: #f8f9fa;
-	--dark-color: #333333;
+  --primary-color: #039be5;
+  --secondary-color: #ff8f00;
+  --success-color: #4caf50;
+  --danger-color: #f44336;
+  --warning-color: #ffeb3b;
+  --info-color: #2196f3;
+  --light-color: #f8f9fa;
+  --dark-color: #333333;
 }
 
 /* Table styles */
 body {
-	margin: 0;
-	padding: 0;
-	background-color: var(--light-color);
-	font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--light-color);
+  font-family: Arial, sans-serif;
 }
 
 .table-container {
-	width: 100vw;
-	height: 100vh;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 table {
-	border-collapse: collapse;
-	width: 100%;
-	max-width: 800px;
-	background-color: var(--light-color);
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-	border-radius: 4px;
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 800px;
+  background-color: var(--light-color);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
 }
 
-th, td {
-	text-align: left;
-	padding: 8px;
+th,
+td {
+  text-align: left;
+  padding: 8px;
 }
 
 th {
-	background-color: var(--primary-color);
-	color: var(--light-color);
+  background-color: var(--primary-color);
+  color: var(--light-color);
 }
 
 tr:nth-child(even) {
-	background-color: var(--light-color);
+  background-color: var(--light-color);
 }
 
 tr:hover {
-	background-color: #f3f3f3;
+  background-color: #f3f3f3;
 }
 
 td.quantity {
-	font-weight: bold;
-	color: var(--danger-color);
+  font-weight: bold;
+  color: var(--danger-color);
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+  table {
+    font-size: 14px;
+  }
+
+  th,
+  td {
+    padding: 6px;
+  }
+}
+
+@media (max-width: 400px) {
+  table {
+    font-size: 12px;
+  }
+
+  th,
+  td {
+    padding: 4px;
+  }
 }
