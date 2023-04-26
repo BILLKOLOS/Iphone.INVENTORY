@@ -1,79 +1,109 @@
 <?php
-    // Database configuration
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "inventory";
+// Start session
+session_start();
 
-    try {
-        // Create a new connection
-        $conn = new mysqli($servername, $username, $password, $dbname);
+// Generate CSRF token
+$csrf_token = bin2hex(random_bytes(32)); // Generate a random token
+$_SESSION['csrf_token'] = $csrf_token; // Store the token in the session
 
-        // Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        } else {
-            echo "Connected successfully<br>";
+// Check if user is already logged in
+if (isset($_SESSION['user_id'])) {
+    echo "You are already logged in as user with ID: " . $_SESSION['user_id'];
+} else {
+    // Check if form is submitted
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        // Verify CSRF token
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            echo "CSRF token verification failed."; // or handle the error in your desired way
+            exit;
         }
 
-        // Create operation using prepared statement
-        $stmt = $conn->prepare("INSERT INTO products (name, price, quantity) VALUES (?, ?, ?)");
+        // Get form data
+        $username = $_POST['username'];
+        $password = $_POST['password'];
 
-        $name = "Product 1";
-        $price = 10.99;
-        $quantity = 5;
-
-        $stmt->bind_param("sdi", $name, $price, $quantity);
-
-        if ($stmt->execute()) {
-            echo "New record created successfully<br>";
+        // Validate username and password
+        if (empty($username) || empty($password)) {
+            echo "Please enter both username and password.";
         } else {
-            throw new Exception("Error: " . $stmt->error);
-        }
+            // Validate username format
+            if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+                echo "Invalid username format. Please enter a valid email address.";
+            } else {
+                // Validate password complexity
+                if (!preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/',
+                    $password)) {
+                    echo "Invalid password. Password must be at least 12 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character (@$!%*?&).";
+                } else {
+                    try {
+                        // Authenticate against a database or other data source
+                        // Example: Fetch user data from a database based on the provided username
+                        // and compare the password hash with the stored password hash
+                        $user_data = fetch_user_data_from_database($username);
+                        if ($user_data) {
+                            $stored_password_hash = $user_data['password_hash'];
+                            if (password_verify($password, $stored_password_hash)) {
+                                // Successful login
+                                echo "Login successful!";
+                                $_SESSION['user_id'] = $user_data['user_id']; // Store user ID in session
 
-        // Read operation
-        $sql = "SELECT * FROM products";
-        $result = $conn->query($sql);
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                echo "ID: " . $row["id"] . " - Name: " . $row["name"] . " - Price: " . $row["price"] . " - Quantity: " . $row["quantity"] . "<br>";
+                                // Set secure session cookie
+                                session_set_cookie_params([
+                                    'lifetime' => 3600, // Set session cookie lifetime to 1 hour
+                                    'path' => '/',
+                                    'domain' => '.example.com', // Set domain to your own domain
+                                    'secure' => true, // Cookie only transmitted over HTTPS
+                                    'httponly' => true, // Cookie not accessible by JavaScript
+                                    'samesite' => 'Lax' // Cookie not sent on cross-site requests
+                                ]);
+                                session_regenerate_id(true); // Generate a new session ID and delete the old one
+                            } else {
+                                // Failed login attempt
+                                echo "Invalid username or password.";
+                            }
+                        } else {
+                            // Failed login attempt
+                            echo "Invalid username or password.";
+                        }
+                    } catch (Exception $e) {
+                        // Error occurred during database operation
+                        // Log the error for debugging
+                        error_log("Database error: " . $e->getMessage());
+                        echo "An error occurred. Please try again later.";
+                    }
+                }
             }
-        } else {
-            echo "0 results<br>";
         }
-
-        // Update operation using prepared statement
-        $stmt = $conn->prepare("UPDATE products SET price = ? WHERE id = ?");
-
-        $price = 9.99;
-        $id = 1;
-
-        $stmt->bind_param("di", $price, $id);
-
-        if ($stmt->execute()) {
-            echo "Record updated successfully<br>";
-        } else {
-            throw new Exception("Error updating record: " . $stmt->error);
-        }
-
-        // Delete operation using prepared statement
-        $stmt = $conn->prepare("DELETE FROM products WHERE id = ?");
-
-        $id = 2;
-
-        $stmt->bind_param("i", $id);
-
-        if ($stmt->execute()) {
-            echo "Record deleted successfully<br>";
-        } else {
-            throw new Exception("Error deleting record: " . $stmt->error);
-        }
-
-        // Close connection
-        $stmt->close();
-        $conn->close();
-    } catch (Exception $e) {
-        echo "Error: " . $e->getMessage() . "<br>";
     }
-?>
+}
 
+function fetch_user_data_from_database($username) {
+    // Establish database connection
+    $mysqli = new mysqli('localhost', 'username', 'password', 'database_name');
+// Check connection
+if ($mysqli->connect_errno) {
+    // Connection failed
+    error_log("Database connection failed: " . $mysqli->connect_error);
+    echo "An error occurred. Please try again later.";
+    exit;
+}
+
+// Prepare and execute query to fetch user data based on the provided username
+$stmt = $mysqli->prepare("SELECT user_id, password_hash FROM users WHERE username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+
+// Fetch user data
+if ($result->num_rows === 1) {
+    $row = $result->fetch_assoc();
+    $stmt->close();
+    $mysqli->close();
+    return $row;
+} else {
+    $stmt->close();
+    $mysqli->close();
+    return false;
+}
+}
+?>
